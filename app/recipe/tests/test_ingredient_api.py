@@ -1,5 +1,5 @@
 """
-Test for the ingredients API.
+Tests for the ingredients API.
 """
 from decimal import Decimal
 
@@ -31,7 +31,7 @@ def create_user(email='user@example.com', password='testpass123'):
     return get_user_model().objects.create_user(email=email, password=password)
 
 
-class PublicIngredientApiTests(TestCase):
+class PublicIngredientsApiTests(TestCase):
     """Test unauthenticated API requests."""
 
     def setUp(self):
@@ -44,7 +44,7 @@ class PublicIngredientApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateIngredientApiTests(TestCase):
+class PrivateIngredientsApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self):
@@ -53,7 +53,7 @@ class PrivateIngredientApiTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_ingredients(self):
-        """Test retreving a list of ingredients."""
+        """Test retrieving a list of ingredients."""
         Ingredient.objects.create(user=self.user, name='Kale')
         Ingredient.objects.create(user=self.user, name='Vanilla')
 
@@ -64,7 +64,7 @@ class PrivateIngredientApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_ingredient_limited_to_user(self):
+    def test_ingredients_limited_to_user(self):
         """Test list of ingredients is limited to authenticated user."""
         user2 = create_user(email='user2@example.com')
         Ingredient.objects.create(user=user2, name='Salt')
@@ -101,8 +101,8 @@ class PrivateIngredientApiTests(TestCase):
         self.assertFalse(ingredients.exists())
 
     def test_filter_ingredients_assigned_to_recipes(self):
-        """Test listing ingredients by those assigned to recipes."""
-        in1 = Ingredient.objects.create(user=self.user, name='Apple')
+        """Test listing ingedients to those assigned to recipes."""
+        in1 = Ingredient.objects.create(user=self.user, name='Apples')
         in2 = Ingredient.objects.create(user=self.user, name='Turkey')
         recipe = Recipe.objects.create(
             title='Apple Crumble',
@@ -121,7 +121,7 @@ class PrivateIngredientApiTests(TestCase):
 
     def test_filtered_ingredients_unique(self):
         """Test filtered ingredients returns a unique list."""
-        ing = Ingredient.objects.create(user=self.user, name='Egg')
+        ing = Ingredient.objects.create(user=self.user, name='Eggs')
         Ingredient.objects.create(user=self.user, name='Lentils')
         recipe1 = Recipe.objects.create(
             title='Eggs Benedict',

@@ -17,6 +17,7 @@ from core.models import (
 
 from recipe.serializers import TagSerializer
 
+
 TAGS_URL = reverse('recipe:tag-list')
 
 
@@ -26,7 +27,7 @@ def detail_url(tag_id):
 
 
 def create_user(email='user@example.com', password='testpass123'):
-    """Create an return a user"""
+    """Create and return a user."""
     return get_user_model().objects.create_user(email=email, password=password)
 
 
@@ -44,15 +45,15 @@ class PublicTagsApiTests(TestCase):
 
 
 class PrivateTagsApiTests(TestCase):
-    """Test authenticated API requests"""
+    """Test authenticated API requests."""
 
     def setUp(self):
         self.user = create_user()
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
-    def test_retrieving_tags(self):
-        """Test retrieving a list of tags"""
+    def test_retrieve_tags(self):
+        """Test retrieving a list of tags."""
         Tag.objects.create(user=self.user, name='Vegan')
         Tag.objects.create(user=self.user, name='Dessert')
 
@@ -77,7 +78,7 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.data[0]['id'], tag.id)
 
     def test_update_tag(self):
-        """Test updating a tag"""
+        """Test updating a tag."""
         tag = Tag.objects.create(user=self.user, name='After Dinner')
 
         payload = {'name': 'Dessert'}
@@ -118,7 +119,7 @@ class PrivateTagsApiTests(TestCase):
         self.assertIn(s1.data, res.data)
         self.assertNotIn(s2.data, res.data)
 
-    def test_filtered_tags_unigue(self):
+    def test_filtered_tags_unique(self):
         """Test filtered tags returns a unique list."""
         tag = Tag.objects.create(user=self.user, name='Breakfast')
         Tag.objects.create(user=self.user, name='Dinner')
@@ -138,4 +139,5 @@ class PrivateTagsApiTests(TestCase):
         recipe2.tags.add(tag)
 
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
+
         self.assertEqual(len(res.data), 1)
